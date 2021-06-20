@@ -7,7 +7,7 @@ find_package(Boost)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS}) 
-    add_executable("${PROJECT_NAME}" server.cpp) 
+    add_executable("${PROJECT_NAME}" server.cpp "server.hpp") 
     target_link_libraries("${PROJECT_NAME}" ${Boost_LIBRARIES})
     target_link_libraries("${PROJECT_NAME}" ws2_32)
     target_link_libraries("${PROJECT_NAME}" mswsock)
