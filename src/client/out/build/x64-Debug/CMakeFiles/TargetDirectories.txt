@@ -1,3 +1,0 @@
-D:/Programming/C++/projects-for-internships/local-chat/local-chat/src/client/out/build/x64-Debug/CMakeFiles/client.dir
-D:/Programming/C++/projects-for-internships/local-chat/local-chat/src/client/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-D:/Programming/C++/projects-for-internships/local-chat/local-chat/src/client/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
