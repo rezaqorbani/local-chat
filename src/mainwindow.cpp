@@ -33,11 +33,11 @@ void MainWindow::on_pushButton_pressed()
 
 void MainWindow::on_actionConnect_to_Localhost_triggered()
 {
-    //QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
-    //QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
-//  const char* address_string = address.toStdString().c_str();
-//  const char* port_string = port.toStdString().c_str();
-    //start_client("127.0.0.1", "8888", this);
+    QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
+    QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
+    const char* address_string = address.toStdString().c_str();
+    const char* port_string = port.toStdString().c_str();
+    start_client(address_string, port_string, this);
 
 }
 
@@ -67,17 +67,18 @@ void start_client (std::string host,  std::string port, MainWindow* mainwindow)
         while (true)
 
         {
-          //if (mainwindow->on_pushButton_2_clicked())
-           // break;
-          //else if (!mainwindow->on_pushButton_clicked())
+           /*
+          if (mainwindow->on_pushButton_2_clicked())
+            break;
+          else if (!mainwindow->on_pushButton_pressed())
             if(notTrue)
                 {
-              line = mainwindow->ui->lineEdit->text();
-              std::string line_std = line.toStdString();
-             c.write(line_std);
-              notTrue = false;
+                      line = mainwindow->ui->lineEdit->text();
+                      const char* line_std = line.toStdString().c_str();
+                      c.write(line_std);
+                      notTrue = false;
                 }
-
+           */
         }
 
         c.close();
