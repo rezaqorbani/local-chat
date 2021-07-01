@@ -2,15 +2,15 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++14
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += .\libs\
-INCLUDEPATH += .\include\
-INCLUDEPATH += .\src\
+
+INCLUDEPATH += D:\Programming\C++\vcpkg\installed\x86-windows\include
+INCLUDEPATH += .\include
 
 SOURCES += \
     .\src\server.cpp \
@@ -20,7 +20,8 @@ SOURCES += \
 HEADERS += \
     .\include\client.hpp \
     .\include\server.hpp \
-    .\include\mainwindow.h
+    .\include\mainwindow.h \
+    include/chat_message.hpp
 
 FORMS += \
     .\src\qt\mainwindow.ui
