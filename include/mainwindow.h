@@ -28,9 +28,7 @@ private slots:
     void on_pushButton_pressed();
 
 private:
-    Ui::MainWindow *ui;
-    friend class chat_client;
-    friend void start_client (std::string host,  std::string port, MainWindow* mainwindow);
+    Ui::MainWindow * ui;
 };
 
 

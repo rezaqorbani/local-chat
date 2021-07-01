@@ -13,106 +13,109 @@
 #include <iostream>
 #include <thread>
 #include <boost/asio.hpp>
-
+#include "chat_message.hpp"
+#include "mainwindow.h"
+namespace Ui { class MainWindow; }
 
 using boost::asio::ip::tcp;
-//Handles the initial connection and asynchronous read and write to the server
+
+typedef std::deque<chat_message> chat_message_queue;
+
 class chat_client
 {
 public:
-    typedef std::deque<std::string> chat_message_queue;
-    chat_client(boost::asio::io_context& io_context,
-        const tcp::resolver::results_type& endpoints)
-        : io_context_(io_context),
-        socket_(io_context)
-    {
-        do_connect(endpoints);
-    }
+  chat_client(boost::asio::io_context& io_context,
+      const tcp::resolver::results_type& endpoints,
+      Ui::MainWindow * ui)
+    : io_context_(io_context),
+      socket_(io_context),
+      ui_(ui)
+  {
+    do_connect(endpoints);
 
-    void write(std::string msg)
-    {
+  }
 
-        bool write_in_progress = !write_msgs_.empty();
-        write_msgs_.push_back(msg);
-        if (!write_in_progress)
+  void write(const chat_message& msg)
+  {
+    boost::asio::post(io_context_,
+        [this, msg]()
         {
+          bool write_in_progress = !write_msgs_.empty();
+          write_msgs_.push_back(msg);
+          if (!write_in_progress)
+          {
             do_write();
-        }
-    }
+          }
+        });
+  }
 
-    void close()
-    {
-        socket_.close();
-    }
+  void close()
+  {
+    boost::asio::post(io_context_, [this]() { socket_.close(); });
+  }
 
 private:
-    void do_connect(const tcp::resolver::results_type& endpoints)
-    {
-        boost::asio::async_connect(socket_, endpoints,
-            [this](boost::system::error_code ec, tcp::endpoint)
+  void do_connect(const tcp::resolver::results_type& endpoints)
+  {
+    boost::asio::async_connect(socket_, endpoints,
+        [this](boost::system::error_code ec, tcp::endpoint)
+        {
+          if (!ec)
+          {
+            do_read_header();
+          }
+        });
+  }
+
+  void do_read_header()
+  {
+    boost::asio::async_read(socket_,
+        boost::asio::buffer(read_msg_.data(), chat_message::header_length),
+        [this](boost::system::error_code ec, std::size_t /*length*/)
+        {
+          if (!ec && read_msg_.decode_header())
+          {
+            do_read_body();
+          }
+          else
+          {
+            socket_.close();
+          }
+        });
+  }
+
+  void do_read_body();
+
+  void do_write()
+  {
+    boost::asio::async_write(socket_,
+        boost::asio::buffer(write_msgs_.front().data(),
+          write_msgs_.front().length()),
+        [this](boost::system::error_code ec, std::size_t /*length*/)
+        {
+          if (!ec)
+          {
+            write_msgs_.pop_front();
+            if (!write_msgs_.empty())
             {
-                if (!ec)
-                {
-                    do_read();
-                }
-            });
-    }
+              do_write();
+            }
+          }
+          else
+          {
+            socket_.close();
+          }
+        });
+  }
 
-    void do_read()
-    {
-        boost::asio::async_read_until(socket_,
-            boost::asio::dynamic_buffer(read_message_, max_message_size),
-            '\n',
-            [this](boost::system::error_code ec, std::size_t bytes)
-            {
-                if (!ec)
-                {
-                    std::string server_message = read_message_.substr(0, bytes);
-                    std::cout << "Server: " << server_message;
-
-                    read_message_.erase(0, bytes);
-
-                    do_read();
-                }
-
-                else
-                {
-                    socket_.close();
-                }
-            });
-    }
-
-    void do_write()
-    {
-        std::string message_sent_ = write_msgs_.front() + "\n";
-        boost::asio::async_write(socket_,
-            boost::asio::buffer(message_sent_),
-            [this](boost::system::error_code ec, std::size_t /*length*/)
-            {
-                if (!ec)
-                {
-                    write_msgs_.pop_front();
-                    if (!write_msgs_.empty())
-                    {
-                        do_write();
-                    }
-                }
-                else
-                {
-                    socket_.close();
-                }
-            });
-    }
-
-    boost::asio::io_context& io_context_;
-    tcp::socket socket_;
-    chat_message_queue write_msgs_;
-    std::string read_message_;
-    boost::asio::streambuf buffer;
-    int max_message_size = 1024;
+private:
+  boost::asio::io_context& io_context_;
+  tcp::socket socket_;
+  chat_message read_msg_;
+  chat_message_queue write_msgs_;
+  Ui::MainWindow * ui_;
 };
+
 //-------------------------------------------------------------------------------------------------------------
-
-
 
 #endif
