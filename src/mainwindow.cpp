@@ -4,7 +4,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),
+      resolver(io_context)
+
 {
     ui->setupUi(this);
     QPushButton * sendButton;
@@ -13,58 +15,53 @@ MainWindow::MainWindow(QWidget *parent)
     sendButton = MainWindow::findChild<QPushButton *>("pushButton");
     leaveButton = MainWindow::findChild<QPushButton *>("pushButton_2");
 
-    connect(sendButton, SIGNAL(released()), this, SLOT(on_pushButton_pressed()));
+    connect(sendButton, SIGNAL(pressed()), this, SLOT(on_pushButton_pressed()));
     connect(leaveButton, SIGNAL(clicked()), this, SLOT(on_pushButton_2_clicked()));
 }
 
 MainWindow::~MainWindow()
 {
+    client->close();
+    execution_thread.join();
+    delete client;
     delete ui;
 }
 
 void MainWindow::on_pushButton_pressed()
 {
-    ui->textBrowser->append(ui->lineEdit->text());
-
+    std::string user_text_std = ui->lineEdit->text().toStdString();
+    const char * user_text = user_text_std.c_str();
+    chat_message msg;
+    size_t length = std::strlen(user_text);
+    msg.body_length(length);
+    std::memcpy(msg.body(), user_text, msg.body_length());
+    msg.encode_header();
+    client->write(msg);
 }
 
 
 void MainWindow::on_actionConnect_to_Localhost_triggered()
 {
-   // QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
-   // QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
+
+    QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
+    std::string address_string = address.toStdString();
+    const char * address_c = address_string.c_str();
+    QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
+    std::string port_string = port.toStdString();
+    const char * port_c = port_string.c_str();
 
     try
      {
 
+      endpoints = resolver.resolve(address_c, port_c);
+      client  = new chat_client(io_context, endpoints, this->ui);
+      execution_thread = std::thread([this](){ io_context.run();});
 
-       boost::asio::io_context io_context;
-
-       tcp::resolver resolver(io_context);
-       auto endpoints = resolver.resolve("127.0.0.1", "8888");
-       chat_client c(io_context, endpoints, this->ui);
-
-       std::thread t([&io_context](){ io_context.run(); });
-
-         const char * hello = "Hello!";
-         chat_message msg;
-         size_t length = std::strlen(hello);
-         msg.body_length(length);
-         std::memcpy(msg.body(), hello, msg.body_length());
-         msg.encode_header();
-         c.write(msg);
-
-
-
-       c.close();
-       t.join();
      }
      catch (std::exception& e)
      {
        std::cerr << "Exception: " << e.what() << "\n";
      }
-
-
 }
 
 
@@ -76,7 +73,8 @@ void chat_client::do_read_body()
       {
         if (!ec)
         {
-          ui_->textBrowser->append(read_msg_.body());
+
+          ui_->textBrowser->append(this->read_msg_.data());
 
           do_read_header();
         }
