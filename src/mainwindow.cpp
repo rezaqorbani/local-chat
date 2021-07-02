@@ -15,8 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     sendButton = MainWindow::findChild<QPushButton *>("pushButton");
     leaveButton = MainWindow::findChild<QPushButton *>("pushButton_2");
 
-    connect(sendButton, SIGNAL(pressed()), this, SLOT(on_pushButton_pressed()));
-    connect(leaveButton, SIGNAL(clicked()), this, SLOT(on_pushButton_2_clicked()));
+    connect(sendButton, SIGNAL(pressed()), this, SLOT(pushButton_pressed()));
+    connect(leaveButton, SIGNAL(clicked()), this, SLOT(pushButton_2_clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -27,7 +27,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_pressed()
+void MainWindow::pushButton_pressed()
 {
     std::string user_text_std = ui->lineEdit->text().toStdString();
     const char * user_text = user_text_std.c_str();
@@ -73,8 +73,11 @@ void chat_client::do_read_body()
       {
         if (!ec)
         {
+          char * received_message = new char[read_msg_.body_length()+1];
+          std::memcpy(received_message, read_msg_.body(), read_msg_.body_length());
+          received_message[read_msg_.body_length()] = '\0';
+          ui_->textBrowser->append(received_message);
 
-          ui_->textBrowser->append(this->read_msg_.data());
 
           do_read_header();
         }
@@ -86,7 +89,7 @@ void chat_client::do_read_body()
 }
 
 
-bool MainWindow::on_pushButton_2_clicked()
+bool MainWindow::pushButton_2_clicked()
 {
     return true;
 }

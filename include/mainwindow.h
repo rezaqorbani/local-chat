@@ -23,9 +23,9 @@ private slots:
 
     void on_actionConnect_to_Localhost_triggered();
 
-    bool on_pushButton_2_clicked();
+    bool pushButton_2_clicked();
 
-    void on_pushButton_pressed();
+    void pushButton_pressed();
 
 private:
 
