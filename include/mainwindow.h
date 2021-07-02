@@ -23,12 +23,19 @@ private slots:
 
     void on_actionConnect_to_Localhost_triggered();
 
-    bool on_pushButton_2_clicked();
+    bool pushButton_2_clicked();
 
-    void on_pushButton_pressed();
+    void pushButton_pressed();
 
 private:
+
     Ui::MainWindow * ui;
+    boost::asio::io_context io_context;
+    tcp::resolver resolver;
+    boost::asio::ip::basic_resolver_results<boost::asio::ip::tcp> endpoints;
+    chat_client * client;
+    std::thread execution_thread;
+
 };
 
 

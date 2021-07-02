@@ -15,6 +15,7 @@
 #include <boost/asio.hpp>
 #include "chat_message.hpp"
 #include "mainwindow.h"
+
 namespace Ui { class MainWindow; }
 
 using boost::asio::ip::tcp;
