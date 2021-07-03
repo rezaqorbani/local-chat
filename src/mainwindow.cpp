@@ -11,12 +11,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     QPushButton * sendButton;
     QPushButton * leaveButton;
+    QLineEdit * messageLine;
 
     sendButton = MainWindow::findChild<QPushButton *>("pushButton");
     leaveButton = MainWindow::findChild<QPushButton *>("pushButton_2");
+    messageLine = MainWindow::findChild<QLineEdit * > ("lineEdit");
 
     connect(sendButton, SIGNAL(pressed()), this, SLOT(pushButton_pressed()));
     connect(leaveButton, SIGNAL(clicked()), this, SLOT(pushButton_2_clicked()));
+    connect(messageLine, SIGNAL(returnPressed()), this, SLOT(lineEdit_returnPressed()));
 }
 
 MainWindow::~MainWindow()
@@ -29,16 +32,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::pushButton_pressed()
 {
-    std::string user_text_std = ui->lineEdit->text().toStdString();
-    const char * user_text = user_text_std.c_str();
-    chat_message msg;
-    size_t length = std::strlen(user_text);
-    msg.body_length(length);
-    std::memcpy(msg.body(), user_text, msg.body_length());
-    msg.encode_header();
-    client->write(msg);
-}
+    if(connected_to_server == true)
+    {
+        std::string user_text_std = ui->lineEdit->text().toStdString();
+        const char * user_text = user_text_std.c_str();
+        chat_message msg;
+        size_t length = std::strlen(user_text);
+        msg.body_length(length);
+        std::memcpy(msg.body(), user_text, msg.body_length());
+        msg.encode_header();
+        client->write(msg);
+        ui->lineEdit->clear();
+    }
+    else
+    {
+        QMessageBox message;
+        message.information(this, "Connection to server failed", "Please connect to the server before sending any message");
 
+    }
+}
 
 void MainWindow::on_actionConnect_to_Localhost_triggered()
 {
@@ -56,7 +68,7 @@ void MainWindow::on_actionConnect_to_Localhost_triggered()
       endpoints = resolver.resolve(address_c, port_c);
       client  = new chat_client(io_context, endpoints, this->ui);
       execution_thread = std::thread([this](){ io_context.run();});
-
+      connected_to_server = true;
      }
      catch (std::exception& e)
      {
@@ -89,16 +101,34 @@ void chat_client::do_read_body()
 }
 
 
-bool MainWindow::pushButton_2_clicked()
+void MainWindow::pushButton_2_clicked()
 {
-    return true;
+    //client->close();
+    //ui->textBrowser->clear();
 }
 
 
 
+void MainWindow::lineEdit_returnPressed()
+{
+    if(connected_to_server == true)
+    {
+        std::string user_text_std = ui->lineEdit->text().toStdString();
+        const char * user_text = user_text_std.c_str();
+        chat_message msg;
+        size_t length = std::strlen(user_text);
+        msg.body_length(length);
+        std::memcpy(msg.body(), user_text, msg.body_length());
+        msg.encode_header();
+        client->write(msg);
+        ui->lineEdit->clear();
+    }
+    else
+    {
+        QMessageBox message;
+        message.information(this, "Connection to server failed", "Please connect to the server before sending any message");
 
+    }
 
-
-
-
+}
 
