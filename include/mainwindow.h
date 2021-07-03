@@ -1,9 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define OFF false
+
 #include <QMainWindow>
 #include <boost/asio.hpp>
 #include <QInputDialog>
+#include <QMessageBox>
 #include "client.hpp"
 
 QT_BEGIN_NAMESPACE
@@ -23,11 +26,15 @@ private slots:
 
     void on_actionConnect_to_Localhost_triggered();
 
-    bool pushButton_2_clicked();
+    void pushButton_2_clicked();
 
     void pushButton_pressed();
 
+    void lineEdit_returnPressed();
+
 private:
+
+
 
     Ui::MainWindow * ui;
     boost::asio::io_context io_context;
@@ -35,6 +42,7 @@ private:
     boost::asio::ip::basic_resolver_results<boost::asio::ip::tcp> endpoints;
     chat_client * client;
     std::thread execution_thread;
+    bool connected_to_server = false;
 
 };
 
