@@ -24,9 +24,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    client->close();
-    execution_thread.join();
-    delete client;
+    if(connected_to_server)
+    {
+        client->close();
+        execution_thread.join();
+        delete client;
+    }
+
     delete ui;
 }
 
@@ -54,26 +58,35 @@ void MainWindow::pushButton_pressed()
 
 void MainWindow::on_actionConnect_to_Localhost_triggered()
 {
+    if(!connected_to_server)
 
-    QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
-    std::string address_string = address.toStdString();
-    const char * address_c = address_string.c_str();
-    QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
-    std::string port_string = port.toStdString();
-    const char * port_c = port_string.c_str();
+    {
+        QString address = QInputDialog::getText(this, "Connect to Server", "Enter IP Address for Host");
+        std::string address_string = address.toStdString();
+        const char * address_c = address_string.c_str();
+        QString port = QInputDialog::getText(this, "Connect to Server", "Enter the Port");
+        std::string port_string = port.toStdString();
+        const char * port_c = port_string.c_str();
 
-    try
-     {
+        try
+         {
 
-      endpoints = resolver.resolve(address_c, port_c);
-      client  = new chat_client(io_context, endpoints, this->ui);
-      execution_thread = std::thread([this](){ io_context.run();});
-      connected_to_server = true;
-     }
-     catch (std::exception& e)
-     {
-       std::cerr << "Exception: " << e.what() << "\n";
-     }
+          endpoints = resolver.resolve(address_c, port_c);
+          client  = new chat_client(io_context, endpoints, this->ui);
+          execution_thread = std::thread([this](){ io_context.run();});
+
+          connected_to_server = true;
+         }
+         catch (std::exception& e)
+         {
+           std::cerr << "Exception: " << e.what() << "\n";
+         }
+    }
+    else
+    {
+        QMessageBox message;
+        message.information(this, "Connection to server failed", "Please leave the current server before joining a new one!");
+    }
 }
 
 
@@ -103,8 +116,21 @@ void chat_client::do_read_body()
 
 void MainWindow::pushButton_2_clicked()
 {
-    //client->close();
-    //ui->textBrowser->clear();
+    try {
+        client->close();
+        execution_thread.join();
+        io_context.restart();
+        //io_context.restart();
+        delete client;
+        connected_to_server = false;
+        ui->textBrowser->clear();
+
+
+    }  catch (...) {
+        QMessageBox message;
+        message.information(this, "Error", "Don't know what happened!");
+    }
+
 }
 
 
