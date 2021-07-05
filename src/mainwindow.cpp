@@ -68,11 +68,17 @@ void MainWindow::on_actionConnect_to_Localhost_triggered()
         std::string port_string = port.toStdString();
         const char * port_c = port_string.c_str();
 
+        QString username_QString = QInputDialog::getText(this, "Username", "Please enter your username for this server");
+        std::string username_string = username_QString.toStdString();
+        std::array<char, MAX_USERNAME_LENGTH> username;
+        strcpy_s(username.data(), username.max_size() ,username_string.c_str());
+
         try
          {
 
           endpoints = resolver.resolve(address_c, port_c);
-          client  = new chat_client(io_context, endpoints, this->ui);
+
+          client  = new chat_client(username, io_context, endpoints, this->ui);
           execution_thread = std::thread([this](){ io_context.run();});
 
           connected_to_server = true;
@@ -157,4 +163,3 @@ void MainWindow::lineEdit_returnPressed()
     }
 
 }
-

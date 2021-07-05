@@ -1,23 +1,12 @@
-//
-// chat_server.cpp
-// ~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2021 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
 
 #include "server.hpp"
 
-
-
-
 //----------------------------------------------------------------------
 
-void chat_room::join(chat_participant_ptr participant)
+void chat_room::join(chat_participant_ptr participant, std::string username)
 {
     participants_.insert(participant);
+    username_lookup_table_[participant] = username;
     for (auto msg : recent_msgs_)
         participant->deliver(msg);
 }
@@ -26,24 +15,60 @@ void chat_room::join(chat_participant_ptr participant)
 void chat_room::leave(chat_participant_ptr participant)
 {
     participants_.erase(participant);
+    username_lookup_table_.erase(participant);
 }
 
-void chat_room::deliver(const chat_message& msg)
+void chat_room::deliver( chat_message& msg, chat_participant_ptr participant)
 {
-    recent_msgs_.push_back(msg);
+    std::string username = get_username(participant);
+    msg.body()[msg.body_length()] = '\0';
+
+    chat_message transmitted_message;
+    size_t transmitted_message_size = username.size() + msg.body_length() + 6;
+    transmitted_message.body_length(transmitted_message_size);
+    std::memset(transmitted_message.body(), '\0', transmitted_message_size);
+
+
+
+    strcpy_s(transmitted_message.body(), username.size() + 1, username.c_str());
+
+    strcat_s(transmitted_message.body(), transmitted_message.body_length(), msg.data());
+
+    transmitted_message.encode_header();
+
+    recent_msgs_.push_back(transmitted_message);
     while (recent_msgs_.size() > max_recent_msgs)
         recent_msgs_.pop_front();
 
     for (auto participant : participants_)
-        participant->deliver(msg);
+        participant->deliver(transmitted_message);
+}
+
+std::string chat_room::get_username(std::shared_ptr<chat_participant> participant)
+{
+    return username_lookup_table_[participant];
 }
 
 //----------------------------------------------------------------------
 
 void chat_session::start()
 {
-    room_.join(shared_from_this());
-    do_read_header();
+    auto self(shared_from_this());
+    boost::asio::async_read(socket_,
+        boost::asio::buffer(username_.data(), MAX_USERNAME_LENGTH),
+        [this, self](boost::system::error_code ec, std::size_t /*length*/)
+        {
+            if (!ec && read_msg_.decode_header())
+            {
+                do_read_username();
+            }
+            else
+            {
+                room_.leave(shared_from_this());
+            }
+        });
+
+
 }
 
 void chat_session::deliver(const chat_message& msg)
@@ -54,6 +79,13 @@ void chat_session::deliver(const chat_message& msg)
     {
         do_write();
     }
+}
+
+void chat_session::do_read_username()
+{
+    strcat_s(username_.data(), MAX_USERNAME_LENGTH, ":");
+    room_.join(shared_from_this(), std::string(username_.data()));
+    do_read_header();
 }
 
 void chat_session::do_read_header()
@@ -83,7 +115,8 @@ void chat_session::do_read_body()
         {
             if (!ec)
             {
-                room_.deliver(read_msg_);
+
+                room_.deliver(read_msg_, shared_from_this());
                 do_read_header();
             }
             else
@@ -150,3 +183,24 @@ private:
 
 //----------------------------------------------------------------------
 
+int main(int argc, char* argv[])
+{
+  try
+  {
+    boost::asio::io_context io_context;
+
+    std::list<chat_server> servers;
+
+    tcp::endpoint endpoint(tcp::v4(), std::atoi("8888"));
+    servers.emplace_back(io_context, endpoint);
+
+
+    io_context.run();
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
+}

@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <map>
 #include <boost/asio.hpp>
 #include "chat_message.hpp"
 
@@ -35,17 +36,21 @@ typedef std::shared_ptr<chat_participant> chat_participant_ptr;
 class chat_room
 {
 public:
-    void join(chat_participant_ptr);
+    void join(chat_participant_ptr, std::string username);
 
     void leave(chat_participant_ptr);
 
-    void deliver(const chat_message& msg);
+    void deliver( chat_message& msg, chat_participant_ptr participant);
+
+    std::string get_username(std::shared_ptr<chat_participant> participant);
 
 
 private:
     std::set<chat_participant_ptr> participants_;
+    std::map<chat_participant_ptr, std::string> username_lookup_table_;
     enum { max_recent_msgs = 100 };
     chat_message_queue recent_msgs_;
+
 };
 
 //----------------------------------------------------------------------
@@ -67,6 +72,8 @@ public:
 
 
 private:
+    void do_read_username();
+
     void do_read_header();
 
     void do_read_body();
@@ -77,8 +84,8 @@ private:
     chat_room& room_;
     chat_message read_msg_;
     chat_message_queue write_msgs_;
+    std::array<char, MAX_USERNAME_LENGTH> username_;
 };
 
-void start_server(std::vector<const char* > ports); 
 
 #endif
