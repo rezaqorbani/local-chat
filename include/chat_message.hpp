@@ -1,5 +1,6 @@
 
 #pragma once
+#define MAX_USERNAME_LENGTH 30
 
 #include <cstdio>
 #include <cstdlib>
