@@ -31,13 +31,12 @@ public:
           boost::asio::io_context& io_context,
       const tcp::resolver::results_type& endpoints,
       Ui::MainWindow * ui)
-    : username_(username),
-      io_context_(io_context),
+    : io_context_(io_context),
       socket_(io_context),
-      ui_(ui)
+      ui_(ui),
+      username_(username)
   {
     do_connect(endpoints);
-
   }
 
   void write(const chat_message& msg)
