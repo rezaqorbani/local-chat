@@ -1,4 +1,3 @@
-
 #include "server.hpp"
 
 //----------------------------------------------------------------------
@@ -24,15 +23,14 @@ void chat_room::deliver( chat_message& msg, chat_participant_ptr participant)
     msg.body()[msg.body_length()] = '\0';
 
     chat_message transmitted_message;
-    size_t transmitted_message_size = username.size() + msg.body_length() + 6;
+    size_t transmitted_message_size = username.size() + msg.body_length() + 2;
     transmitted_message.body_length(transmitted_message_size);
     std::memset(transmitted_message.body(), '\0', transmitted_message_size);
 
 
-
     strcpy_s(transmitted_message.body(), username.size() + 1, username.c_str());
 
-    strcat_s(transmitted_message.body(), transmitted_message.body_length(), msg.data());
+    strcat_s(transmitted_message.body(), transmitted_message.body_length(), msg.body());
 
     transmitted_message.encode_header();
 
@@ -83,7 +81,7 @@ void chat_session::deliver(const chat_message& msg)
 
 void chat_session::do_read_username()
 {
-    strcat_s(username_.data(), MAX_USERNAME_LENGTH, ":");
+    strcat_s(username_.data(), MAX_USERNAME_LENGTH, ": ");
     room_.join(shared_from_this(), std::string(username_.data()));
     do_read_header();
 }
@@ -180,6 +178,7 @@ private:
     tcp::acceptor acceptor_;
     chat_room room_;
 };
+
 
 //----------------------------------------------------------------------
 /*
