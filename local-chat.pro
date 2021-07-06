@@ -13,15 +13,16 @@ INCLUDEPATH += D:\Programming\C++\vcpkg\installed\x86-windows\include
 INCLUDEPATH += .\include
 
 SOURCES += \
-    .\src\server.cpp \
     .\src\main.cpp \
-    .\src\mainwindow.cpp
+    .\src\mainwindow.cpp \
+    .\src\server\server.cpp
+
 
 HEADERS += \
     .\include\client.hpp \
-    .\include\server.hpp \
     .\include\mainwindow.h \
-    include/chat_message.hpp
+    .\include\chat_message.hpp \
+    .\src\server\server.hpp
 
 FORMS += \
     .\src\qt\mainwindow.ui
@@ -30,3 +31,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    CMakeLists.txt
