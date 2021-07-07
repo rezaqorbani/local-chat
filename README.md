@@ -3,7 +3,7 @@ A simple cross-platfrom chat application, written in C++, for chatting on a serv
 ## Dependencies
 ### Boost.Asio
 Boost.Asio is included in the boost libraries which can be downloaded from [here](https://www.boost.org/users/history/version_1_76_0.html). However it is easier to use a package manager such as [vcpkg](https://github.com/microsoft/vcpkg). 
-Once installed, navigate to the top directory where vcpkg is installed and run the following command
+Once installed, navigate to the directory where vcpkg is installed and run the following command:
 ```
 .\vcpkg install boost:x86-windows-static
 ```
@@ -13,4 +13,12 @@ The client side uses Qt6 for GUI. In this project three Qt modules are used: *wi
 
 ## Build
 ### Server
-Currently the server is an console application and does not depend on Qt. server can be easily built with 
+Currently the server is an console application and does not depend on Qt. server can be easily built with CMake. Navigate to the projects root directory and run the following command: 
+```
+cmake -S . -B .\out\build -DCMAKE_TOOLCHAIN_FILE=[PATH_TO_VCPKG_ROOT_DIRECTORY]/scripts/buildsystems/vcpkg.cmake
+```
+This will try to generate build files for the native IDE, for example Visual Studio on windows, according to your platform. You can choose your preferred IDE with the *-G* parameter followed by the name of the IDE of your choice defined [here](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#manual:cmake-generators(7)). Once the build files are generated the project can be built with the command: 
+```
+cmake --build .\out\build
+```
+### Client
