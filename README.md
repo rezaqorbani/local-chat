@@ -4,7 +4,7 @@ A simple cross-platfrom chat application, written in C++, for chatting on a serv
 ### Boost.Asio
 Boost.Asio is included in the boost libraries which can be downloaded from [here](https://www.boost.org/users/history/version_1_76_0.html). However it is easier to use a package manager such as [vcpkg](https://github.com/microsoft/vcpkg). 
 Once installed, navigate to the top directory where vcpkg is installed and run the following command
-```powershell
+```
 .\vcpkg install boost:x86-windows-static
 ```
 this will install the 32 bit static version of boost libraries which was used to create this application. 
