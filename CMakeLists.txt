@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20.3)
 project(local-chat VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
-set(Boost_INCLUDE_DIR ${_VCPKG_INSTALLED_DIR}/x64-windows-static/include)
+set(Boost_INCLUDE_DIR ${_VCPKG_INSTALLED_DIR}/x86-windows/include)
 
 find_package(Boost)
 if (Boost_FOUND)

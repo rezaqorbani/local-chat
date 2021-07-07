@@ -15,14 +15,14 @@ INCLUDEPATH += .\include
 SOURCES += \
     .\src\main.cpp \
     .\src\mainwindow.cpp \
-    .\src\server\server.cpp
+    #.\src\server\server.cpp
 
 
 HEADERS += \
     .\include\client.hpp \
     .\include\mainwindow.h \
     .\include\chat_message.hpp \
-    .\src\server\server.hpp
+    #.\src\server\server.hpp
 
 FORMS += \
     .\src\qt\mainwindow.ui
