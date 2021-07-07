@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 {
     ui->setupUi(this);
+    ui->textBrowser->append("Please join a server!");
     QPushButton * sendButton;
     QPushButton * leaveButton;
     QLineEdit * messageLine;
@@ -77,9 +78,10 @@ void MainWindow::on_actionConnect_to_Localhost_triggered()
          {
 
           endpoints = resolver.resolve(address_c, port_c);
-
+          ui->textBrowser->clear();
           client  = new chat_client(username, io_context, endpoints, this->ui);
           execution_thread = std::thread([this](){ io_context.run();});
+
 
           connected_to_server = true;
          }
@@ -122,6 +124,8 @@ void chat_client::do_read_body()
 
 void MainWindow::pushButton_2_clicked()
 {
+    if(connected_to_server == true)
+    {
     try {
         client->close();
         execution_thread.join();
@@ -130,11 +134,13 @@ void MainWindow::pushButton_2_clicked()
         delete client;
         connected_to_server = false;
         ui->textBrowser->clear();
+        ui->textBrowser->append("Please join a server!");
 
 
     }  catch (...) {
         QMessageBox message;
         message.information(this, "Error", "Don't know what happened!");
+    }
     }
 
 }
