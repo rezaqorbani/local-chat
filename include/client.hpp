@@ -2,11 +2,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-// Reza Qorbani
-// 26/09/2020
-// Client side of an asynchronous chat application.
-// Last updated 09/02/2021
-
 
 #include <cstdlib>
 #include <deque>
