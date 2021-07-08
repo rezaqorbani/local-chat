@@ -1,5 +1,6 @@
 # local-chat
 A simple cross-platfrom chat application, written in C++, for chatting on a server hosted by users. [Boost Asio](https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio.html) is used for asynchronous communication and [Qt](https://www.qt.io/) is used for GUI. 
+![GIF](https://github.com/rezaqorbani/local-chat/blob/master/other/programGIF.gif)
 ## Dependencies
 ### Boost.Asio
 Boost.Asio is included in the boost libraries which can be downloaded from [here](https://www.boost.org/users/history/version_1_76_0.html). However it is easier to use a package manager such as [vcpkg](https://github.com/microsoft/vcpkg). 
