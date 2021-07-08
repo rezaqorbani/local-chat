@@ -24,3 +24,7 @@ cmake --build .\out\build
 By default, the build type will be Debug, in order to chanage the build type to release just use `--config Release` arugment. 
 
 ### Client
+The client can be built with Qt Creator. After cloning the project, open the project file, local-chat.pro, and uncomment the following line:
+````
+INCLUDEPATH += [VCPKG_DIRECTORY_PATH]\installed\x86-windows\include
+````
