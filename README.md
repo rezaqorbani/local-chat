@@ -21,4 +21,6 @@ Replace [VCPKG_DIRECTORY_PATH] with the path to the vcpkg installation directory
 ```
 cmake --build .\out\build
 ```
+By default, the build type will be Debug, in order to chanage the build type to release just use `--config Release` arugment. 
+
 ### Client
