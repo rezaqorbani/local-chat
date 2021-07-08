@@ -15,9 +15,9 @@ The client side uses Qt6 for GUI. In this project three Qt modules are used: *wi
 ### Server
 Currently the server is an console application and does not depend on Qt. server can be easily built with CMake. Navigate to the projects root directory and run the following command: 
 ```
-cmake -S . -B .\out\build -DCMAKE_TOOLCHAIN_FILE=[PATH_TO_VCPKG_ROOT_DIRECTORY]/scripts/buildsystems/vcpkg.cmake
+cmake -S . -B .\out\build -DCMAKE_TOOLCHAIN_FILE=[VCPKG_DIRECTORY_PATH]/scripts/buildsystems/vcpkg.cmake
 ```
-This will try to generate build files for the native IDE, for example Visual Studio on windows, according to your platform. You can choose your preferred IDE with the *-G* parameter followed by the name of the IDE of your choice defined [here](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#manual:cmake-generators(7)). Once the build files are generated the project can be built with the command: 
+Replace [VCPKG_DIRECTORY_PATH] with the path to the vcpkg installation directory. This will try to generate build files for the native IDE, for example Visual Studio on windows, according to your platform. You can choose your preferred IDE with the *-G* parameter followed by the name of the IDE of your choice defined [here](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#manual:cmake-generators(7)). Once the build files are generated the project can be built with the command: 
 ```
 cmake --build .\out\build
 ```
