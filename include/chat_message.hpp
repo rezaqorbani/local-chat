@@ -57,7 +57,11 @@ public:
   bool decode_header()
   {
     char header[header_length + 1] = "";
+#if defined (_MSC_VER)
     strncat_s(header, data_, header_length);
+#else
+    strncat(header, data_, header_length);
+#endif
     body_length_ = std::atoi(header);
     if (body_length_ > max_body_length)
     {
