@@ -22,6 +22,10 @@ Replace [VCPKG_DIRECTORY_PATH] with the path to the vcpkg installation directory
 cmake --build .\out\build
 ```
 By default, the build type will be Debug, in order to chanage the build type to release just use `--config Release` arugment. 
+When built navigate to the folder where the executable is and start the server as follows (in Windows): 
+``
+.\server.exe [port]
+``
 
 ### Client
 The client can be built with Qt Creator. After cloning the project, open the project file, local-chat.pro, and uncomment the following line:
