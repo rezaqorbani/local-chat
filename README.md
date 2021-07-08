@@ -13,7 +13,7 @@ The client side uses Qt6 for GUI. In this project three Qt modules are used: *wi
 
 ## Build
 ### Server
-Currently the server is an console application and does not depend on Qt. server can be easily built with CMake. Navigate to the projects root directory and run the following command: 
+Currently the server is an console application and does not depend on Qt. server can be easily built with [CMake](https://cmake.org/). Navigate to the projects root directory and run the following command: 
 ```
 cmake -S . -B .\out\build -DCMAKE_TOOLCHAIN_FILE=[VCPKG_DIRECTORY_PATH]/scripts/buildsystems/vcpkg.cmake
 ```
