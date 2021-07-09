@@ -27,7 +27,7 @@ void chat_room::deliver( chat_message& msg, chat_participant_ptr participant)
     transmitted_message.body_length(transmitted_message_size);
     std::memset(transmitted_message.body(), '\0', transmitted_message_size);
 
-#if defined (_WIN32)
+#if defined (_MSC_VER)
     strcpy_s(transmitted_message.body(), username.size() + 1, username.c_str());
 
     strcat_s(transmitted_message.body(), transmitted_message.body_length(), msg.body());
@@ -86,7 +86,7 @@ void chat_session::deliver(const chat_message& msg)
 
 void chat_session::do_read_username()
 {
-#if defined(_WIN32)
+#if defined (_MSC_VER)
     strcat_s(username_.data(), MAX_USERNAME_LENGTH, ": ");
 #else
    strcat(username_.data(), MAX_USERNAME_LENGTH, ": );
