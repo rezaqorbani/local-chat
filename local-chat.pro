@@ -8,8 +8,9 @@ CONFIG += c++14
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+#Uncomment this line and add VCPKG directory path 
+#INCLUDEPATH += [VCPKG_DIRECTORY_PATH]\installed\x86-windows\include
 
-INCLUDEPATH += D:\Programming\C++\vcpkg\installed\x86-windows\include
 INCLUDEPATH += .\include
 
 SOURCES += \
