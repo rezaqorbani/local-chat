@@ -89,7 +89,7 @@ void chat_session::do_read_username()
 #if defined (_MSC_VER)
     strcat_s(username_.data(), MAX_USERNAME_LENGTH, ": ");
 #else
-   strcat(username_.data(), MAX_USERNAME_LENGTH, ": );
+   strcat(username_.data(), MAX_USERNAME_LENGTH, ": " );
 #endif
     room_.join(shared_from_this(), std::string(username_.data()));
     do_read_header();
